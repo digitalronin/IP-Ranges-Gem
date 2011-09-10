@@ -1,4 +1,7 @@
 module IpRanges
+
+  # Class to represent a single IP number. Exposes methods for comparisons
+  # with other IP numbers, as well as a method to increment the IP number.
   class Ip
     # String representation of this Ip number
     # 

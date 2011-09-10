@@ -3,8 +3,9 @@ Compare IP ranges
 
 This gem allows you to take multiple IP ranges, which may be defined in several ways (as a single IP number, a dotted string or a CIDR range), and compare them against each other to check for uniqueness, overlaps, equivalence or one range containing another.
 
-Example
-=======
+
+Example1 - Range class
+======================
 
     r1 = IpRanges::Range.new :range => '1.2.3.4..1.2.3.5'
     r2 = IpRanges::Range.new :range => '1.2.3.0/24'
@@ -13,13 +14,24 @@ Example
     r2.contains_range?(r1) => true
     r2 == r1               => false
     
+
+Example1 - Check for overlaps
+=============================
+
+    require 'rubygems'
+    require 'lib/ip-ranges'
+
+    include IpRanges
+
     list = [
       '1.2.3.4..1.2.3.5',
       '1.2.3.0/24'
     ]
-    
-    IpRanges::Range.check_for_overlaps list 
-      => ["1.2.3.4..1.2.3.5 is contained by range 1.2.3.0/24"] 
+
+    puts check_for_overlaps(list)
+      
+    # outputs: 1.2.3.4..1.2.3.5 is contained by range 1.2.3.0/24
+
 
 MIT License
 ===========
