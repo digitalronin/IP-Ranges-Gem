@@ -1,4 +1,9 @@
 module IpRanges
+
+  # Class to represent a range of IP numbers. 
+  # Range objects are instantiated from a string which may be a single 
+  # Exposes methods to compare this range with another range, and to 
+  # iterate through all IP numbers in the range.
   class Range
     # First IP number in the range, as an Ip object
     attr_accessor :first
@@ -44,33 +49,6 @@ module IpRanges
           raise e
         end
       end
-    end
-
-    # Arguments:
-    # * An array of strings that define single IP number or ranges (in dotted or CIDR notation)
-    # Returns:
-    # * An array of strings describing any overlaps, equivalences and containments which occur in the list (see the specs for details)
-    def self.check_for_overlaps(list)
-      rtn = []
-      while list.any?
-        test_range = list.shift
-        test = new :range => test_range
-        list.each do |range| 
-          i = new :range => range
-          if test.overlaps_range?(i)
-            if test == i
-              rtn << "#{test_range} equals range #{range}"
-            elsif test.contains_range?(i)
-              rtn << "#{test_range} contains range #{range}"
-            elsif i.contains_range?(test)
-              rtn << "#{test_range} is contained by range #{range}"
-            else
-              rtn << "#{test_range} overlaps with #{range}"
-            end
-          end
-        end
-      end
-      rtn
     end
 
     # Returns the last Ip object in this range.

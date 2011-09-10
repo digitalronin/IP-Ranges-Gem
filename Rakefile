@@ -9,7 +9,7 @@ $stdout.sync = true
 task :default => :spec
 
 task :spec do
-  system "bundle exec rspec spec/**/*_spec.rb"
+  system "bundle exec rspec spec/*_spec.rb spec/**/*_spec.rb"
 end
 
 # This builds the actual gem. For details of what all these options
@@ -30,7 +30,7 @@ spec = Gem::Specification.new do |s|
   s.has_rdoc          = true
   s.description       = "Compare multiple IP ranges for overlaps, equivalence and containment"
   # s.extra_rdoc_files  = %w(README)
-  # s.rdoc_options      = %w(--main README)
+  s.rdoc_options      = %w(-x pkg)
 
   # Add any extra files to include in the gem (like your README)
   s.files             = %w(Gemfile Gemfile.lock Rakefile README.markdown) + Dir.glob("{spec,lib}/**/*")
