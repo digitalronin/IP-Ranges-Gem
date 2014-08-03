@@ -25,7 +25,7 @@ spec = Gem::Specification.new do |s|
   s.summary           = "Manage ranges of IP numbers determining equivalence, containment and overlaps"
   s.author            = "David Salgado"
   s.email             = "david@digitalronin.com"
-  s.homepage          = "http://roninonrails.wordpress.com/2011/09/10/ip-ranges-gem/"
+  s.homepage          = "https://digitalronin.github.io/2011/09/10/ip-ranges-gem"
 
   s.has_rdoc          = true
   s.description       = "Compare multiple IP ranges for overlaps, equivalence and containment"
