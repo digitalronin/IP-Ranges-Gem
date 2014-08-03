@@ -51,6 +51,21 @@ module IpRanges
       end
     end
 
+    # Arguments
+    # * An +Ip+ object
+    # Extend the range if the pushed IP is the next, contiguous ip in the range. Otherwise return false and do nothing.
+    def push(ip)
+      if empty?
+        @first = ip
+        true
+      elsif ip.to_s == @last.dup.increment
+        @last = ip
+        true
+      else
+        false
+      end
+    end
+
     # Returns the last Ip object in this range.
     def last
       @last
@@ -102,6 +117,10 @@ module IpRanges
     end
 
     private
+
+    def empty?
+      @first.nil? && @last.nil?
+    end
 
     def throttle
       @counter += 1
