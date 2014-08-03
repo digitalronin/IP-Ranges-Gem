@@ -51,6 +51,16 @@ module IpRanges
       end
     end
 
+    def to_s
+      if empty?
+        ''
+      elsif first == last
+        first.to_s
+      else
+        [first.to_s, last.to_s].join('..')
+      end
+    end
+
     # Arguments
     # * An +Ip+ object
     # Extend the range if the pushed IP is the next, contiguous ip in the range. Otherwise return false and do nothing.

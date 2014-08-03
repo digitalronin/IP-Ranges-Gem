@@ -4,6 +4,25 @@ describe IpRanges::Range do
   before do
   end
 
+  describe "#to_s" do
+
+    it "prints empty string" do
+      range = described_class.new(:range => '')
+      range.to_s.should eq('')
+    end
+
+    it "prints one ip" do
+      range = described_class.new(:range => '1.2.3.4')
+      range.to_s.should eq('1.2.3.4')
+    end
+
+    it "prints dotted range" do
+      range = described_class.new(:range => '1.2.3.4 .. 1.2.3.6')
+      range.to_s.should eq('1.2.3.4..1.2.3.6')
+    end
+
+  end
+
   context "pushing" do
     let(:ip1) { IpRanges::Ip.new(:number => '1.1.1.1') }
     let(:ip2) { IpRanges::Ip.new(:number => '1.1.1.2') }
