@@ -1,4 +1,13 @@
-source :rubygems
+source "https://rubygems.org"
+
 gem "netaddr"
-gem "rdoc"
-gem "rspec"
+
+group :development, :test do
+  gem "rdoc"
+  gem "rdoc-data"
+  gem "rake"
+  gem "gem-this"
+  gem "gemcutter"
+  gem "rspec"
+  gem "ruby-debug"
+end

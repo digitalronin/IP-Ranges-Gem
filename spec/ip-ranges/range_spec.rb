@@ -4,6 +4,107 @@ describe IpRanges::Range do
   before do
   end
 
+  describe "#to_s" do
+
+    it "prints empty string" do
+      range = described_class.new(:range => '')
+      range.to_s.should eq('')
+    end
+
+    it "prints one ip" do
+      range = described_class.new(:range => '1.2.3.4')
+      range.to_s.should eq('1.2.3.4')
+    end
+
+    it "prints dotted range" do
+      range = described_class.new(:range => '1.2.3.4 .. 1.2.3.6')
+      range.to_s.should eq('1.2.3.4..1.2.3.6')
+    end
+
+  end
+
+  context "pushing" do
+    let(:ip1) { IpRanges::Ip.new(:number => '1.1.1.1') }
+    let(:ip2) { IpRanges::Ip.new(:number => '1.1.1.2') }
+    let(:ip3) { IpRanges::Ip.new(:number => '1.1.1.3') }
+    let(:ip4) { IpRanges::Ip.new(:number => '1.1.1.4') }
+
+    context "empty range" do
+      let(:empty) { described_class.new(:range => '') }
+
+      it "pushes" do
+        res = empty.push(ip1)
+        res.should be_true
+      end
+
+      it "sets first ip" do
+        empty.push(ip1)
+        empty.first.should eq(ip1)
+      end
+
+      it "sets last ip" do
+        empty.push(ip1)
+        empty.last.should eq(ip1)
+      end
+    end
+
+    context "range with start" do
+      let(:r1) { described_class.new(:range => ip1.to_s) }
+
+      context "pushing next ip" do
+        it "pushes" do
+          res = r1.push(ip2)
+          res.should be_true
+        end
+
+        it "sets last ip" do
+          r1.push(ip2)
+          r1.last.should eq(ip2)
+        end
+      end
+
+      context "pushing non-contiguous ip" do
+        it "doesn't push" do
+          res = r1.push(ip3)
+          res.should be_false
+        end
+
+        it "doesn't set last ip" do
+          r1.push(ip3)
+          r1.last.should eq(r1.first)
+        end
+      end
+    end
+
+    context "range with start and end" do
+      let(:range) { described_class.new(:range => [ip1.to_s, ip2.to_s].join('..')) }
+
+      context "pushing next ip" do
+        it "pushes" do
+          res = range.push(ip3)
+          res.should be_true
+        end
+
+        it "sets last ip" do
+          range.push(ip3)
+          range.last.should eq(ip3)
+        end
+      end
+
+      context "pushing non-contiguous ip" do
+        it "doesn't push" do
+          res = range.push(ip4)
+          res.should be_false
+        end
+
+        it "doesn't set last ip" do
+          range.push(ip4)
+          range.last.should eq(ip2)
+        end
+      end
+    end
+  end
+
   context "checking for overlaps" do
 
     it "knows when range a contains range b" do

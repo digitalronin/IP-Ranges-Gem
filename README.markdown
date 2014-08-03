@@ -15,7 +15,7 @@ Example1 - Range class
     r2 == r1               => false
     
 
-Example1 - Check for overlaps
+Example2 - Check for overlaps
 =============================
 
     require 'rubygems'
