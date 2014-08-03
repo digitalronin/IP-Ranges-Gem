@@ -57,6 +57,7 @@ module IpRanges
     def push(ip)
       if empty?
         @first = ip
+        @last  = ip
         true
       elsif ip.to_s == @last.dup.increment
         @last = ip

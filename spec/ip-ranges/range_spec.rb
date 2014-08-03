@@ -22,6 +22,11 @@ describe IpRanges::Range do
         empty.push(ip1)
         empty.first.should eq(ip1)
       end
+
+      it "sets last ip" do
+        empty.push(ip1)
+        empty.last.should eq(ip1)
+      end
     end
 
     context "range with start" do
