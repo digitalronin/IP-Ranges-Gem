@@ -11,14 +11,6 @@ module IpRanges
     # Last IP number in the range, as an Ip object
     attr_accessor :last
 
-    # Throttle (or don't) how fast we yield each_ip
-    attr_accessor :throttle
-    attr_accessor :sleep_time
-
-    BATCHSIZE = 250
-    PAUSE     = 2
-
-
     SINGLE_IP    = /^\d+\.\d+\.\d+\.\d+$/
     DOTTED_RANGE = /^(\d+\.\d+\.\d+\.\d+)\.\.(\d+\.\d+\.\d+\.\d+)$/
     CIDR_RANGE   = %r[/]
@@ -41,10 +33,6 @@ module IpRanges
     #   IpRanges::Range.new :range => '1.2.3.0/24' => a range containing 256 Ip numbers (1.2.3.0 .. 1.2.3.255)
     #
     def initialize(params)
-      @throttle   = params.fetch(:throttle, true)
-      @sleep_time = params.fetch(:sleep_time, PAUSE)
-      @batch_size = params.fetch(:batch_size, BATCHSIZE)
-
       string = params.fetch(:range).gsub(' ', '')
 
       case string
@@ -140,12 +128,10 @@ module IpRanges
 
     # Yields each IP in the range, in turn, as an Ip object.
     def each_ip
-      @counter = 0 # for throttling
       ip = first
       while last >= ip
         yield ip.dup
         ip.increment
-        throttle
       end
     end
 
@@ -154,18 +140,5 @@ module IpRanges
     def empty?
       @first.nil? && @last.nil?
     end
-
-    def throttle
-      @counter += 1
-      if @counter % BATCHSIZE == 0
-        take_a_nap if throttle
-      end
-    end
-
-    def take_a_nap
-      log "Counter: #{$counter}, sleeping for #{sleep_time} seconds" if $verbose
-      sleep sleep_time
-    end
-
   end
 end
