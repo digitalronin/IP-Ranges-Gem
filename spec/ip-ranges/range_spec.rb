@@ -1,7 +1,34 @@
 require 'spec/spec_helper'
 
 describe IpRanges::Range do
-  before do
+  let(:range_str) { '1.2.3.4' }
+  subject(:range) { described_class.new(:range => range_str, :throttle => false) }
+
+  describe "#count" do
+    context "with one ip" do
+      let(:range_str) { '1.2.3.4' }
+
+      it "counts" do
+        expect(range.count).to eq(1)
+      end
+    end
+
+    context "with dotted range" do
+      let(:range_str) { '1.2.3.4 .. 1.2.3.6' }
+
+      it "counts" do
+        expect(range.count).to eq(3)
+      end
+    end
+
+
+    context "with cidr range" do
+      let(:range_str) { '1.2.3.0/24' }
+
+      it "counts" do
+        expect(range.count).to eq(256)
+      end
+    end
   end
 
   describe "#to_s" do

@@ -11,18 +11,28 @@ module IpRanges
     # Last IP number in the range, as an Ip object
     attr_accessor :last
 
-    SINGLE_IP = /^\d+\.\d+\.\d+\.\d+$/
-    DOTTED_RANGE = /^(\d+\.\d+\.\d+\.\d+)\.\.(\d+\.\d+\.\d+\.\d+)$/
-    CIDR_RANGE = %r[/]
+    # Throttle (or don't) how fast we yield each_ip
+    attr_accessor :throttle
+    attr_accessor :sleep_time
 
     BATCHSIZE = 250
-    PAUSE = 2
+    PAUSE     = 2
+
+
+    SINGLE_IP    = /^\d+\.\d+\.\d+\.\d+$/
+    DOTTED_RANGE = /^(\d+\.\d+\.\d+\.\d+)\.\.(\d+\.\d+\.\d+\.\d+)$/
+    CIDR_RANGE   = %r[/]
 
     # Instatiate a range from a string representation which can be a single
     # Ip number, a dotted range or a CIDR range
     #
     # Arguments:
-    # * A +Hash+ with a single key ':range' whose value is a string defining the range.
+    # * A +Hash+ with a key ':range' whose value is a string defining the range.
+    #
+    # Optional Arguments (supply as hash keys):
+    # * ':throttle' true/false (default: true), sleep in each_ip after every batch_size IPs
+    # * ':batch_size' (for throttling - default: 250)
+    # * ':sleep_time' (for throttling - default: 2)
     #
     # Examples:
     #
@@ -31,24 +41,36 @@ module IpRanges
     #   IpRanges::Range.new :range => '1.2.3.0/24' => a range containing 256 Ip numbers (1.2.3.0 .. 1.2.3.255)
     #
     def initialize(params)
-      string = params[:range].gsub(' ', '')
+      @throttle   = params.fetch(:throttle, true)
+      @sleep_time = params.fetch(:sleep_time, PAUSE)
+      @batch_size = params.fetch(:batch_size, BATCHSIZE)
+
+      string = params.fetch(:range).gsub(' ', '')
+
       case string
       when SINGLE_IP
         @first = Ip.new :number => string
-        @last = Ip.new :number => string
+        @last  = Ip.new :number => string
       when DOTTED_RANGE
         @first = Ip.new :number => $1
-        @last = Ip.new :number => $2
+        @last  = Ip.new :number => $2
       when CIDR_RANGE
         begin
-          cidr = NetAddr::CIDR.create(string)
+          cidr   = NetAddr::CIDR.create(string)
           @first = Ip.new :number => cidr.first
-          @last = Ip.new :number => cidr.last
+          @last  = Ip.new :number => cidr.last
         rescue Exception => e
           puts "Error creating CIDR range from: #{string}"
           raise e
         end
       end
+    end
+
+    # Return the number of IPs within the range
+    def count
+      rtn = 0
+      each_ip {|ip| rtn += 1}
+      rtn
     end
 
     def to_s
@@ -136,13 +158,13 @@ module IpRanges
     def throttle
       @counter += 1
       if @counter % BATCHSIZE == 0
-        take_a_nap
+        take_a_nap if throttle
       end
     end
 
     def take_a_nap
-      log "Counter: #{$counter}, sleeping for #{PAUSE} seconds" if $verbose
-      sleep PAUSE
+      log "Counter: #{$counter}, sleeping for #{sleep_time} seconds" if $verbose
+      sleep sleep_time
     end
 
   end
