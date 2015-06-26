@@ -50,83 +50,89 @@ describe IpRanges::Range do
 
   end
 
-  context "pushing" do
+  context "extending" do
     let(:ip1) { IpRanges::Ip.new(:number => '1.1.1.1') }
     let(:ip2) { IpRanges::Ip.new(:number => '1.1.1.2') }
     let(:ip3) { IpRanges::Ip.new(:number => '1.1.1.3') }
     let(:ip4) { IpRanges::Ip.new(:number => '1.1.1.4') }
 
-    context "empty range" do
-      let(:empty) { described_class.new(:range => '') }
+    context "pushing" do
+      context "when range is empty" do
+        let(:empty) { described_class.new(:range => '') }
 
-      it "pushes" do
-        res = empty.push(ip1)
-        expect(res).to be_truthy
-      end
-
-      it "sets first ip" do
-        empty.push(ip1)
-        expect(empty.first).to eq(ip1)
-      end
-
-      it "sets last ip" do
-        empty.push(ip1)
-        expect(empty.last).to eq(ip1)
-      end
-    end
-
-    context "range with start" do
-      let(:r1) { described_class.new(:range => ip1.to_s) }
-
-      context "pushing next ip" do
         it "pushes" do
-          res = r1.push(ip2)
+          res = empty.push(ip1)
           expect(res).to be_truthy
         end
 
-        it "sets last ip" do
-          r1.push(ip2)
-          expect(r1.last).to eq(ip2)
-        end
-      end
-
-      context "pushing non-contiguous ip" do
-        it "doesn't push" do
-          res = r1.push(ip3)
-          expect(res).to be_falsey
-        end
-
-        it "doesn't set last ip" do
-          r1.push(ip3)
-          expect(r1.last).to eq(r1.first)
-        end
-      end
-    end
-
-    context "range with start and end" do
-      let(:range) { described_class.new(:range => [ip1.to_s, ip2.to_s].join('..')) }
-
-      context "pushing next ip" do
-        it "pushes" do
-          res = range.push(ip3)
-          expect(res).to be_truthy
+        it "sets first ip" do
+          expect {
+            empty.push(ip1)
+          }.to change(empty, :first).from(nil).to(ip1)
         end
 
         it "sets last ip" do
-          range.push(ip3)
-          expect(range.last).to eq(ip3)
+          expect {
+            empty.push(ip1)
+          }.to change(empty, :last).from(nil).to(ip1)
         end
       end
 
-      context "pushing non-contiguous ip" do
-        it "doesn't push" do
-          res = range.push(ip4)
-          expect(res).to be_falsey
+      context "when range has a start" do
+        let(:r1) { described_class.new(:range => ip1.to_s) }
+
+        context "pushing next ip" do
+          it "pushes" do
+            res = r1.push(ip2)
+            expect(res).to be_truthy
+          end
+
+          it "sets last ip" do
+            expect {
+              r1.push(ip2)
+            }.to change(r1, :last).from(ip1).to(ip2)
+          end
         end
 
-        it "doesn't set last ip" do
-          range.push(ip4)
-          expect(range.last).to eq(ip2)
+        context "pushing non-contiguous ip" do
+          it "doesn't push" do
+            res = r1.push(ip3)
+            expect(res).to be_falsey
+          end
+
+          it "doesn't set last ip" do
+            expect {
+              r1.push(ip3)
+            }.to_not change(r1, :last).from(r1.first)
+          end
+        end
+      end
+
+      context "when range has start and end" do
+        let(:range) { described_class.new(:range => [ip1.to_s, ip2.to_s].join('..')) }
+
+        context "pushing next ip" do
+          it "pushes" do
+            expect(range.push(ip3)).to be_truthy
+          end
+
+          it "sets last ip" do
+            expect {
+              range.push(ip3)
+            }.to change(range, :last).from(ip2).to(ip3)
+          end
+        end
+
+        context "pushing non-contiguous ip" do
+          it "doesn't push" do
+            expect(range.push(ip4)).to be_falsey
+          end
+
+          it "doesn't set last ip" do
+            expect {
+              range.push(ip4)
+            }.to_not change(range, :last).from(ip2)
+          end
         end
       end
     end
