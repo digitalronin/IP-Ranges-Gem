@@ -36,7 +36,7 @@ spec = Gem::Specification.new do |s|
 
   # Change these as appropriate
   s.name              = "ip-ranges"
-  s.version           = "0.3.0"
+  s.version           = "0.3.1"
   s.summary           = "Compare and manipulate ranges of IP numbers"
   s.author            = "David Salgado"
   s.email             = "david@digitalronin.com"
