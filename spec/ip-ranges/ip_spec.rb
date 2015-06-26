@@ -95,4 +95,34 @@ describe IpRanges::Ip do
     specify { expect(ip.increment).to eq("1.200.3.5") }
   end
 
+
+  context "decrementing" do
+    context "when there are no more numbers" do
+      let(:number) { '0.0.0.0' }
+
+      it "barfs" do
+        expect { ip.decrement }.to raise_error(RuntimeError)
+      end
+    end
+
+    context "when 2nd tuple hits 0" do
+      let(:number) { '2.0.0.0' }
+
+      specify { expect(ip.decrement).to eq("1.255.255.255") }
+    end
+
+    context "when 3rd tuple hits 0" do
+      let(:number) { '1.2.0.0' }
+
+      specify { expect(ip.decrement).to eq("1.1.255.255") }
+    end
+
+    context "when last tuple hits 0" do
+      let(:number) { '1.2.3.0' }
+
+      specify { expect(ip.decrement).to eq("1.2.2.255") }
+    end
+
+    specify { expect(ip.decrement).to eq("1.200.3.3") }
+  end
 end

@@ -4,7 +4,7 @@ module IpRanges
   # with other IP numbers, as well as a method to increment the IP number.
   class Ip
     # String representation of this Ip number
-    # 
+    #
     # Example:
     #
     #   ip = Ip.new :number => '1.2.3.4'
@@ -15,7 +15,7 @@ module IpRanges
     # Arguments:
     #
     # *  A hash containing a single key whose value is the IP number as a string
-    # 
+    #
     # Example:
     #
     #   Ip.new(:number => '1.2.3.4')
@@ -96,9 +96,44 @@ module IpRanges
     end
 
     # Changes the 'number' property of this Ip
+    # to the number before this one.
+    #
+    #   example:
+    #
+    #     ip = Ip.new(:number => '1.2.3.4')
+    #     ip.number => '1.2.3.4'
+    #     ip.decrement
+    #     ip.number => '1.2.3.3'
+    #
+    def decrement
+      a, b, c, d = tuples number
+      if d > 0
+        d -= 1
+      else
+        d = 255
+        if c > 0
+          c -= 1
+        else
+          c = 255
+          if b > 0
+            b -= 1
+          else
+            b = 255
+            if a > 0
+              a -= 1
+            else
+              raise "No more IPs"
+            end
+          end
+        end
+      end
+      @number = [a, b, c, d].join('.')
+    end
+
+    # Changes the 'number' property of this Ip
     # to the next number after this one.
     #
-    #   example: 
+    #   example:
     #
     #     ip = Ip.new(:number => '1.2.3.4')
     #     ip.number => '1.2.3.4'
