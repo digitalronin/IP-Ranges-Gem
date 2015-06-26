@@ -56,6 +56,88 @@ describe IpRanges::Range do
     let(:ip3) { IpRanges::Ip.new(:number => '1.1.1.3') }
     let(:ip4) { IpRanges::Ip.new(:number => '1.1.1.4') }
 
+    context "unshifting" do
+      context "when range is empty" do
+        let(:empty) { described_class.new(:range => '') }
+
+        it "unshifts" do
+          res = empty.unshift(ip1)
+          expect(res).to be_truthy
+        end
+
+        it "sets first ip" do
+          expect {
+            empty.unshift(ip1)
+          }.to change(empty, :first).from(nil).to(ip1)
+        end
+
+        it "sets last ip" do
+          expect {
+            empty.unshift(ip1)
+          }.to change(empty, :last).from(nil).to(ip1)
+        end
+      end
+
+      context "when range has a start" do
+        let(:r1) { described_class.new(:range => ip2.to_s) }
+
+        context "unshifting previous ip" do
+          it "unshifts" do
+            res = r1.unshift(ip1)
+            expect(res).to be_truthy
+          end
+
+          it "doesn't affect last ip" do
+            expect {
+              r1.unshift(ip1)
+            }.to_not change(r1, :last).from(ip2)
+          end
+        end
+
+        context "unshifting non-contiguous ip" do
+          it "doesn't unshift" do
+            res = r1.unshift(ip4)
+            expect(res).to be_falsey
+          end
+
+          it "doesn't set first ip" do
+            expect {
+              r1.unshift(ip4)
+            }.to_not change(r1, :first).from(ip2)
+          end
+        end
+      end
+
+      context "when range has start and end" do
+        let(:range) { described_class.new(:range => [ip2.to_s, ip3.to_s].join('..')) }
+
+        context "unshifting previous ip" do
+          it "unshifts" do
+            expect(range.unshift(ip1)).to be_truthy
+          end
+
+          it "sets first ip" do
+            expect {
+              range.unshift(ip1)
+            }.to change(range, :first).from(ip2).to(ip1)
+          end
+        end
+
+        context "unshifting non-contiguous ip" do
+          it "doesn't unshift" do
+            expect(range.unshift(ip4)).to be_falsey
+          end
+
+          it "doesn't set first ip" do
+            expect {
+              range.unshift(ip4)
+            }.to_not change(range, :first).from(ip2)
+          end
+        end
+      end
+    end
+
+
     context "pushing" do
       context "when range is empty" do
         let(:empty) { described_class.new(:range => '') }
@@ -103,7 +185,7 @@ describe IpRanges::Range do
           it "doesn't set last ip" do
             expect {
               r1.push(ip3)
-            }.to_not change(r1, :last).from(r1.first)
+            }.to_not change(r1, :last).from(ip1)
           end
         end
       end

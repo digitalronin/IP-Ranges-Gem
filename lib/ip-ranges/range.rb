@@ -73,14 +73,26 @@ module IpRanges
 
     # Arguments
     # * An +Ip+ object
-    # Extend the range if the pushed IP is the next, contiguous ip in the range. Otherwise return false and do nothing.
+    # Extend the range if the supplied IP is the next, contiguous ip in the range. Otherwise return false and do nothing.
     def push(ip)
       if empty?
-        @first = ip
-        @last  = ip
-        true
+        set_single_value(ip)
       elsif ip.to_s == @last.dup.increment
         @last = ip
+        true
+      else
+        false
+      end
+    end
+
+    # Arguments
+    # * An +Ip+ object
+    # Extend the range at the start if the supplied IP is the previous, contiguous ip in the range. Otherwise return false and do nothing.
+    def unshift(ip)
+      if empty?
+        set_single_value(ip)
+      elsif ip.to_s == @first.dup.decrement
+        @first = ip
         true
       else
         false
@@ -136,6 +148,12 @@ module IpRanges
     end
 
     private
+
+    def set_single_value(ip)
+      @first = ip
+      @last  = ip
+      true
+    end
 
     def empty?
       @first.nil? && @last.nil?
