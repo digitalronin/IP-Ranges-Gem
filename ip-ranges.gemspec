@@ -2,15 +2,15 @@
 
 Gem::Specification.new do |s|
   s.name = "ip-ranges"
-  s.version = "0.3.2"
+  s.version = "0.3.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["David Salgado"]
-  s.date = "2015-06-26"
+  s.date = "2016-06-24"
   s.description = "Compare multiple IP ranges for overlaps, equivalence and containment"
   s.email = "david@digitalronin.com"
   s.files = ["Gemfile", "Gemfile.lock", "Rakefile", "README.markdown", "spec/ip-ranges", "spec/ip-ranges/ip_spec.rb", "spec/ip-ranges/range_spec.rb", "spec/ip_ranges_spec.rb", "spec/spec_helper.rb", "lib/ip-ranges", "lib/ip-ranges/ip.rb", "lib/ip-ranges/range.rb", "lib/ip-ranges.rb"]
-  s.homepage = "https://digitalronin.github.io/2011/09/10/ip-ranges-gem/"
+  s.homepage = "https://digitalronin.github.io/2011/09/10/ip-ranges-gem.html"
   s.rdoc_options = ["-x", "pkg"]
   s.require_paths = ["lib"]
   s.rubygems_version = "2.0.15"
